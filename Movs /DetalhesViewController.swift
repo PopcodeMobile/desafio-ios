@@ -27,25 +27,57 @@ class DetalhesViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        filmeImageView.image = filme.imagem
-        tituloLabel.text = filme.titulo
-        descricaoLabel.text = filme.descricao
-        generoFilme.text = filme.genero
-        lancamentoYear.text = filme.lancamento
-     
-    }
-    @IBAction func tezte(_ sender: Any) {
+        API.recuperarGenero { (g: [Genero]) in
+            self.recuperarGenero(generos: g)
+        }
         
-        botaoFavoritar.setImage(#imageLiteral(resourceName: "favorite_full_icon"), for: .normal)
-        let alertaContoller = UIAlertController.init (title: "Adicionado aos favoritos", message: "Para remover dos favoritos pressione e solte", preferredStyle: .alert )
-        let acaoConfirmar = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertaContoller.addAction(acaoConfirmar)
-        present (alertaContoller, animated: true, completion: nil)
+    }
+
+    @IBAction func tezte(_ sender: Any) {
+       
+        let key = "um"
+        let estado: Bool = UserDefaults.standard.bool(forKey: key)
+        UserDefaults.standard.set(!estado, forKey: key)
+        if estado {
+            botaoFavoritar.setImage(#imageLiteral(resourceName: "favorite_full_icon"), for: .normal)
+            let alertaContoller = UIAlertController.init (title: "Sucesso", message: "Adicionado aos favoritos", preferredStyle: .alert )
+            let acaoConfirmar = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertaContoller.addAction(acaoConfirmar)
+            present (alertaContoller, animated: true, completion: nil)
+        }
+
         
     }
     @IBAction func botaoFavorito(_ sender: Any) {
         
         self.botaoFavoritar.setImage(#imageLiteral(resourceName: "favorite_empty_icon"), for: .normal)
+        
+    }
+    
+    func recuperarGenero( generos: [Genero]){
+        var gender = ""
+        for genero in generos{
+            for id in filme.genre_ids {
+                
+                if genero.id == id{
+                    gender += genero.name
+                    gender += " / "
+                }
+            }
+            
+            }
+        gender = String(gender.dropLast().dropLast())
+        
+        DispatchQueue.main.async {
+            let imagePathBase = "https://image.tmdb.org/t/p/w500"
+            let url = URL(string: imagePathBase + self.filme.poster_path)
+            let dados = try? Data(contentsOf: url!)
+            self.filmeImageView.image = UIImage(data: dados!)
+            self.tituloLabel.text = self.filme.title
+            self.descricaoLabel.text = self.filme.overview
+            self.lancamentoYear.text = self.filme.release_date
+            self.generoFilme.text = gender
+        }
         
     }
     

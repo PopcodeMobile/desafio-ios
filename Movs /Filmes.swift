@@ -6,28 +6,49 @@
 //  Copyright © 2018 Brenner. All rights reserved.
 //
 
-import UIKit
 
-class Filme {
+import Foundation
+
+struct Result: Decodable {
     
-    var titulo: String!
-    var descricao: String!
-    var imagem: UIImage!
-    var lancamento: String!
-    var genero: String!
+    let results: [Filme]
+    let total_pages: Int
+    let page: Int
+    let total_results: Int
+}
+
+
+
+class Filme: Codable {
+    let id: Int
+    let title: String
+    let overview: String
+    let genre_ids: Array<Int>
+    let poster_path: String
+    let release_date: String
+   
     
-    init ( titulo : String, descricao: String, imagem : UIImage, lancamento: String, genero: String ){
+    
+    init (id: Int, title: String, overview: String, genre_ids: Array<Int>,  poster_path: String, release_date: String ) {
+        self.id = id
+        self.poster_path = poster_path
+        self.title = title
+        self.genre_ids = genre_ids
+        self.release_date = release_date
+        self.overview = overview
         
-        self.titulo = titulo
-        self.descricao = descricao
-        self.imagem = imagem
-        self.lancamento = lancamento
-        self.genero = genero
-        
-        
-    }
+}
+}
+struct Genero: Codable {
     
+    let id: Int
+    let name: String
+}
+struct GeneroResultado: Codable {
     
-    
+    let genres: [Genero]
     
 }
+
+
+
